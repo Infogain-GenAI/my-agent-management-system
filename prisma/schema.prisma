@@ -1,0 +1,222 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Master Tables
+// Enums
+enum capability {
+  CAPABILITY_1
+  CAPABILITY_2
+  CAPABILITY_3
+  CAPABILITY_4
+}
+
+enum feature {
+  FEATURE_1
+  FEATURE_2
+  FEATURE_3
+  FEATURE_4
+}
+
+enum status {
+  ACTIVE
+  OFFLINE
+  MAINTENANCE
+  PENDING
+  ERROR
+  ONLINE
+}
+
+enum domain_type {
+  SOFTWARE_DEVELOPMENT
+  CLOUD_OPERATIONS
+  DEVOPS
+  SECURITY
+  DATA_ENGINEERING
+  HUMAN_RESOURCES
+  FINANCE
+  IT_SUPPORT
+}
+
+enum provider_type {
+  FRAMEWORKS
+  PLATFORMS
+}
+
+enum integration_type {
+  SDK
+  API
+  NATIVE
+}
+
+enum role {
+  PLATFORM_ADMIN
+  PROJECT_ADMIN
+  SUPPORT
+  USER
+}
+
+enum provider_agent_type {
+  PLANNER
+  EXECUTOR
+  REVIEWER
+  ASSISTANT
+  CUSTOM_FLOWS
+  CODER
+  VALIDATOR
+  WORKER
+  MANAGER
+  SPECIALIST
+  CUSTOM
+  PRE_BUILT
+  ENTERPRISE_ASSISTANT
+  PROCESS_AUTOMATION
+  CUSTOM_AGENTS
+  PRE_BUILT_SOLUTIONS
+}
+
+
+// Data Entity Table 
+
+model user {
+  id              String        @id @default(cuid())
+  first_name      String
+  last_name       String
+  email           String        @unique
+  role            role          @default(USER)     
+  agents          user_agent[]
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  metrics         metric[]
+
+  @@index([email])
+}
+
+model domain {
+  id          String        @id @default(cuid())
+  name        String
+  type        domain_type 
+  agents      domain_agent[]
+  created_at  DateTime        @default(now())
+  updated_at  DateTime        @updatedAt
+  metrics     metric[]
+
+  @@index([name])
+  @@index([type])
+}
+
+
+model provider {
+  id            String        @id @default(cuid())
+  name          String
+  type          provider_type
+  description   String?
+  status        status    @default(OFFLINE)
+  features      feature[]
+  agent_types   provider_agent_type[]
+  agents        agent[]
+  integration   integration_type[]
+  config        Json?
+  logo_link     String?
+  doc_link      String?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  metrics       metric[]
+
+  @@index([name])
+  @@index([type])
+}
+
+
+model persona {
+  id            String        @id @default(cuid())
+  name          String
+  description   String
+  agents        agent[]
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  metrics       metric[]
+
+  @@index([name])
+}
+
+model agent {
+  id            String          @id @default(cuid())
+  name          String
+  description   String?
+  status        status          @default(OFFLINE)
+  capabilities  capability[]
+  features      feature[]
+  config        Json?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  domains       domain_agent[]       
+  provider_id   String
+  provider      provider        @relation(fields: [provider_id], references: [id])
+  persona_id    String
+  persona       persona         @relation(fields: [persona_id], references: [id])
+  user_id       String
+  users         user_agent[]
+  metrics       metric[]
+  
+  @@index([name])
+  @@index([provider_id])
+  @@index([persona_id])
+  @@index([status])
+  @@index([user_id])
+
+}
+
+model user_agent {
+  user_id  String
+  agent_id String
+  user    user      @relation(fields: [user_id], references: [id])
+  agent   agent     @relation(fields: [agent_id], references: [id])
+
+  @@id([user_id, agent_id])
+}
+
+model domain_agent {
+  domain_id String
+  agent_id  String
+  domain   domain @relation(fields: [domain_id], references: [id])
+  agent    agent  @relation(fields: [agent_id], references: [id])
+
+  @@id([domain_id, agent_id])
+}
+
+model metric {
+  id              String        @id @default(cuid())
+  agent           agent?       @relation(fields: [agent_id], references: [id])
+  agent_id        String?
+  provider        provider?    @relation(fields: [provider_id], references: [id])
+  provider_id     String?
+  domain          domain?      @relation(fields: [domain_id], references: [id])
+  domain_id       String?
+  persona         persona?    @relation(fields: [persona_id], references: [id])
+  persona_id      String?
+  user            user?        @relation(fields: [user_id], references: [id])
+  user_id         String?
+  metric_type     String
+  metric_value    Float
+  unit            String
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  @@index([agent_id])
+  @@index([provider_id])
+  @@index([domain_id])
+  @@index([persona_id])
+  @@index([user_id])
+}
