@@ -1,36 +1,50 @@
+## My sample test app with nextjs and prisma 
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+### Getting Started
 
-First, run the development server:
+
+I created using the following commands
+Step 1: Set Up the Next.js Project
+npx create-next-app@latest my-agent-management-system
+cd my-agent-management-system
+
+npm install prisma @prisma/client
+npx prisma init
+
+update the DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public" in .env 
+
+Step 2: Define the Prisma Schema in  prisma/schema.prisma
+
+npx prisma db push  if experimenting or 
+
+npx prisma generate
+npx prisma migrate dev --name init
+
+
+Create a .env
+
+add the 
+DATABASE_URL="postgresql://<user>:<passwrd>@<localhost>:<5432>/<database>?schema=<schema>"
+
+See Prisma Schema and seed file is in Prisma folder 
+
+API is in  src\pages\api\agent\index.ts
+
+Run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+    npm install
+    npx prisma validate  #for validating prisma schema before running 
+    npx prisma db push  #to push the db scripts to create Db tables in a schema as mentioned in .env
+    npm run dev
+
 ```
+#### initial check 
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the home page.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### API call to see all agents In a post man or in browzer 
+http://localhost:3000/api/agent?page=1&limit=10&sort=name 
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[ http://localhost:3000/api/agent?page=1&limit=10&sort=name ](http://localhost:3000/api/agent?page=1&limit=10&sort=name )
