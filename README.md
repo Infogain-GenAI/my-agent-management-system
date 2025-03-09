@@ -56,38 +56,7 @@ Use Postman or a browser to access:
 
 [http://localhost:3000/api/agent?page=1&limit=10&sort=name](http://localhost:3000/api/agent?page=1&limit=10&sort=name)
 
-### To Run Docker
 
-#### Docker Compose with PostgreSQL
-
-```bash
-docker-compose up --build
-docker-compose exec app npm run seed
-```
-
-#### Build and Run the Docker Container
-
-Create a `docker-compose.yml` file with the following content:
-
-```yaml
-version: '3.8'
-
-services:
-    app:
-        build: .
-        restart: always
-        environment:
-            DATABASE_URL: postgres://<user>:<password>@<host>:<port>/<database>?schema=<schema>
-        ports:
-            - "3000:3000"
-```
-
-Then save and run:
-
-```bash
-docker-compose up --build
-docker-compose exec app npm run seed
-```
 ## My sample test app with nextjs and prisma 
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
