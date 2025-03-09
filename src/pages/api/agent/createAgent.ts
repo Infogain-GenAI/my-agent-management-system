@@ -21,20 +21,20 @@ const createAgent = async (req: NextApiRequest, res: NextApiResponse) => {
         capabilities,
         features,
         config,
-        provider_id,
-        persona_id,
+        provider: { connect: { id: provider_id } },
+        persona: { connect: { id: persona_id } },
         user_id,
-        domains: {
-          create: {
-            domain: {
-              connect: { id: domain_id },
-            },
-          },
-        },
         users: {
           create: {
             user: {
               connect: { id: user_id },
+            },
+          },
+        },
+        domains: {
+          create: {
+            domain: {
+              connect: { id: domain_id },
             },
           },
         },

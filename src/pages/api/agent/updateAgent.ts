@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma, logger } from './common';
 
 // Update an existing agent
-export const updateAgent = async (req: NextApiRequest, res: NextApiResponse) => {
+const updateAgent = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id, name, description, status, capabilities, features, config, provider_id, persona_id, user_id, domain_id } = req.body;
 
   if (!id || !name || !status || !capabilities || !features || !config || !provider_id || !persona_id || !user_id || !domain_id) {
@@ -13,6 +13,17 @@ export const updateAgent = async (req: NextApiRequest, res: NextApiResponse) => 
   }
 
   try {
+    const agent = await prisma.agent.findUnique({
+      where: { id },
+      include: {
+        users: true,
+      },
+    });
+
+    if (!agent || !agent.users.some(user => user.user_id === user_id)) {
+      return res.status(403).json({ error: 'Forbidden: User does not have permission to update this agent' });
+    }
+
     const updatedAgent = await prisma.agent.update({
       where: { id },
       data: {
@@ -24,19 +35,18 @@ export const updateAgent = async (req: NextApiRequest, res: NextApiResponse) => 
         config,
         provider_id,
         persona_id,
-        user_id,
-        domains: {
-          upsert: {
-            where: { domain_id_agent_id: { domain_id, agent_id: id } },
-            update: { domain: { connect: { id: domain_id } } },
-            create: { domain: { connect: { id: domain_id } } },
-          },
-        },
         users: {
           upsert: {
             where: { user_id_agent_id: { user_id, agent_id: id } },
             update: { user: { connect: { id: user_id } } },
             create: { user: { connect: { id: user_id } } },
+          },
+        },
+        domains: {
+          upsert: {
+            where: { domain_id_agent_id: { domain_id, agent_id: id } },
+            update: { domain: { connect: { id: domain_id } } },
+            create: { domain: { connect: { id: domain_id } } },
           },
         },
       },

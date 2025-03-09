@@ -11,6 +11,21 @@ const getAgentById = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const agent = await prisma.agent.findUnique({
       where: { id },
+      include: {
+        provider: true,
+        persona: true,
+        users: {
+          include: {
+            user: true,
+          },
+        },
+        domains: {
+          include: {
+            domain: true,
+          },
+        },
+        metrics: true,
+      },
     });
 
     if (!agent) {
@@ -20,9 +35,9 @@ const getAgentById = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(200).json(agent);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error(`Error fetching agents by status: ${errorMessage}`);
+    logger.error(`Error fetching agent by ID: ${errorMessage}`);
     res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
 };
 
-export default  getAgentById;
+export default getAgentById;
