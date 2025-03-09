@@ -5,7 +5,11 @@ import logger from '@/lib/logger';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case 'GET':
-      return getAgents(req, res);
+      if (req.query.id) {
+        return getAgentById(req, res);
+      } else {
+        return getAgents(req, res);
+      }
     case 'POST':
       return createAgent(req, res);
     case 'PUT':
@@ -63,6 +67,43 @@ async function getAgents(req: NextApiRequest, res: NextApiResponse) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error(`Error fetching agents: ${errorMessage}`);
+    res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
+  }
+}
+
+// Get an agent by ID
+async function getAgentById(req: NextApiRequest, res: NextApiResponse) {
+  const { id } = req.query;
+
+  try {
+    const agent = await prisma.agent.findUnique({
+      where: { id: id as string },
+      include: {
+        provider: true,
+        persona: true,
+        users: {
+          include: {
+            user: true,
+          },
+        },
+        domains: {
+          include: {
+            domain: true,
+          },
+        },
+        metrics: true,
+      },
+    });
+
+    if (!agent) {
+      return res.status(404).json({ error: 'Agent not found' });
+    }
+
+    res.status(200).json(agent);
+    logger.info(`Fetched agent: ${JSON.stringify(agent)}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error(`Error fetching agent: ${errorMessage}`);
     res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
 }
@@ -190,7 +231,7 @@ async function deleteAgent(req: NextApiRequest, res: NextApiResponse) {
       where: { id },
     });
 
-    res.status(204).end();
+    res.status(200).json({ message: `Delete success : Deleted agent with id: ${id}` });
     logger.info(`Deleted agent with id: ${id}`);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
