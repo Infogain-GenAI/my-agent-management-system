@@ -1,0 +1,132 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { prisma } from '@/lib/db';
+import logger from '@/lib/logger';
+import nextConnect from 'next-connect';
+
+const handler = nextConnect<NextApiRequest, NextApiResponse>();
+
+// Get all agents with pagination and sorting
+handler.get(async (req, res) => {
+  const { page = 1, limit = 10, sort = 'name' } = req.query;
+
+  const pageNumber = parseInt(page as string, 10);
+  const pageSize = parseInt(limit as string, 10);
+
+  try {
+    const agents = await prisma.agent.findMany({
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize,
+      orderBy: {
+        [sort as string]: 'asc',
+      },
+      include: {
+        provider: true,
+        persona: true,
+        users: {
+          include: {
+            user: true,
+          },
+        },
+        domains: {
+          include: {
+            domain: true,
+          },
+        },
+        metrics: true,
+      },
+    });
+
+    const totalAgents = await prisma.agent.count();
+
+    res.status(200).json({
+      data: agents,
+      total: totalAgents,
+      page: pageNumber,
+      pageSize,
+    });
+
+    logger.info(`Agents list: ${JSON.stringify(agents)}`);
+    logger.info(`Fetched agents - Page: ${pageNumber}, Limit: ${pageSize}, Sort: ${sort}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error(`Error fetching agents: ${errorMessage}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Create a new agent
+handler.post(async (req, res) => {
+  const { name, description, status, capabilities, features, config, provider_id, persona_id, user_id } = req.body;
+
+  try {
+    const newAgent = await prisma.agent.create({
+      data: {
+        name,
+        description,
+        status,
+        capabilities,
+        features,
+        config,
+        provider_id,
+        persona_id,
+        user_id,
+      },
+    });
+
+    res.status(201).json(newAgent);
+    logger.info(`Created new agent: ${JSON.stringify(newAgent)}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error(`Error creating agent: ${errorMessage}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Update an existing agent
+handler.put(async (req, res) => {
+  const { id, name, description, status, capabilities, features, config, provider_id, persona_id, user_id } = req.body;
+
+  try {
+    const updatedAgent = await prisma.agent.update({
+      where: { id },
+      data: {
+        name,
+        description,
+        status,
+        capabilities,
+        features,
+        config,
+        provider_id,
+        persona_id,
+        user_id,
+      },
+    });
+
+    res.status(200).json(updatedAgent);
+    logger.info(`Updated agent: ${JSON.stringify(updatedAgent)}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error(`Error updating agent: ${errorMessage}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Delete an agent
+handler.delete(async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    await prisma.agent.delete({
+      where: { id },
+    });
+
+    res.status(204).end();
+    logger.info(`Deleted agent with id: ${id}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error(`Error deleting agent: ${errorMessage}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+export default handler;
