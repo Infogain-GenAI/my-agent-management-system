@@ -5,6 +5,7 @@ import { status as AgentStatus } from '@prisma/client';
 const getAgentsByProvider = async (req: NextApiRequest, res: NextApiResponse) => {
   const { provider, userId, status, page = 1, limit = 10, sort = 'name' } = req.query as { provider: string, userId: string, status?: AgentStatus, page?: string, limit?: string, sort?: string };
 
+  // Validate the provider and user ID
   if (!provider || typeof provider !== 'string') {
     return res.status(400).json({ error: 'Invalid or missing provider' });
   }
@@ -13,12 +14,11 @@ const getAgentsByProvider = async (req: NextApiRequest, res: NextApiResponse) =>
     return res.status(400).json({ error: 'Invalid or missing user ID' });
   }
 
-  console.log("********************* status", status);
-
   const pageNumber = parseInt(page as string, 10);
   const pageSize = parseInt(limit as string, 10);
 
   try {
+    // Fetch agents by provider, including related data
     const agents = await prisma.agent.findMany({
       where: {
         provider: { id: { contains: provider } },
@@ -34,6 +34,7 @@ const getAgentsByProvider = async (req: NextApiRequest, res: NextApiResponse) =>
       orderBy: { [sort as string]: 'asc' },
     });
 
+    // Count the total number of agents
     const totalAgents = await prisma.agent.count({
       where: {
         provider: { id: { contains: provider } },
@@ -46,6 +47,7 @@ const getAgentsByProvider = async (req: NextApiRequest, res: NextApiResponse) =>
       },
     });
 
+    // Respond with the agents data
     res.status(200).json({
       data: agents,
       total: totalAgents,

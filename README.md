@@ -35,6 +35,8 @@ npx prisma generate # generate client
 npx prisma migrate dev --name init  # for versioning the schema push 
 ```
 
+![Postgres Db Entites](misc/postgres_aiden_db_v1.png)
+
 Create a `.env` file and add the following:
 
 ```env

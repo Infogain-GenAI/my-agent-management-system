@@ -1,0 +1,37 @@
+import React, { useEffect, useState } from 'react';
+
+const HomePage = () => {
+  const [agents, setAgents] = useState([]);
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        const response = await fetch('/api/agent/getAllAgents');
+        const data = await response.json();
+        setAgents(data);
+      } catch (error) {
+        console.error('Error fetching agents:', error);
+      }
+    };
+
+    fetchAgents();
+  }, []);
+
+  return (
+    <div>
+      <h1>Agent List</h1>
+      <ul>
+        {agents.map((agent) => (
+          <li key={agent.id}>
+            <h2>{agent.name}</h2>
+            <p>{agent.description}</p>
+            <p>Status: {agent.status}</p>
+            {/* Add more agent details as needed */}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default HomePage;

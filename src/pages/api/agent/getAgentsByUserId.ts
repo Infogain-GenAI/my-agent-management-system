@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma, logger } from './common';
+import { status as AgentStatus } from '@prisma/client';
 
 const getAgentsByUserId = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { userId, status, page = 1, limit = 10, sort = 'name' } = req.query;
+  const { userId, status, page = 1, limit = 10, sort = 'name' } = req.query as { userId: string, status?: AgentStatus, page?: string, limit?: string, sort?: string };
 
   if (!userId || typeof userId !== 'string') {
     return res.status(400).json({ error: 'Invalid or missing user ID' });
@@ -19,7 +20,7 @@ const getAgentsByUserId = async (req: NextApiRequest, res: NextApiResponse) => {
             user_id: userId,
           },
         },
-        ...(status && { status: status as string }),
+        ...(status && { status }),
       },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
@@ -50,7 +51,7 @@ const getAgentsByUserId = async (req: NextApiRequest, res: NextApiResponse) => {
             user_id: userId,
           },
         },
-        ...(status && { status: status as string }),
+        ...(status && { status }),
       },
     });
 

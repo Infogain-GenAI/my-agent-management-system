@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma, logger } from './common';
+import { status as AgentStatus } from '@prisma/client';
 
 // Get agents by domain
 const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { domain, userId, status, page = 1, limit = 10, sort = 'name' } = req.query;
+  const { domain, userId, status, page = 1, limit = 10, sort = 'name' } = req.query as { domain: string, userId: string, status?: AgentStatus, page?: string, limit?: string, sort?: string };
 
+  // Validate the domain and user ID
   if (!domain || typeof domain !== 'string') {
     return res.status(400).json({ error: 'Invalid or missing domain' });
   }
@@ -17,6 +19,7 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
   const pageSize = parseInt(limit as string, 10);
 
   try {
+    // Fetch agents by domain, including related data
     const agents = await prisma.agent.findMany({
       where: {
         domains: {
@@ -33,7 +36,7 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
             user_id: userId,
           },
         },
-        ...(status && { status: status as string }),
+        ...(status && { status }),
       },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
@@ -57,6 +60,7 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
+    // Count the total number of agents
     const totalAgents = await prisma.agent.count({
       where: {
         domains: {
@@ -73,10 +77,11 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
             user_id: userId,
           },
         },
-        ...(status && { status: status as string }),
+        ...(status && { status }),
       },
     });
 
+    // Respond with the agents data
     res.status(200).json({
       data: agents,
       total: totalAgents,
@@ -87,6 +92,7 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
     logger.info(`Agents list by domain: ${JSON.stringify(agents)}`);
     logger.info(`Fetched agents by domain - Page: ${pageNumber}, Limit: ${pageSize}, Sort: ${sort}`);
   } catch (error) {
+    // Handle errors and respond with an error message
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error(`Error fetching agents by domain: ${errorMessage}`);
     res.status(500).json({ error: 'Internal Server Error', message: errorMessage });

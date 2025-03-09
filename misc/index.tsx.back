@@ -1,0 +1,17 @@
+import React from 'react';
+import { GetServerSideProps } from 'next';
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const data = await fetchData(); // Fetch data from an API or database
+  return { props: { data } };
+};
+
+const HomePage = ({ data }) => {
+  return (
+    <div>
+      {data}
+    </div>
+  );
+};
+
+export default HomePage;

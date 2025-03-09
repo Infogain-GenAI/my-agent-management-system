@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 const getAgentsByName = async (req: NextApiRequest, res: NextApiResponse) => {
   const { name, userId, status, page = 1, limit = 10, sort = 'name' } = req.query as { name: string, userId: string, status?: AgentStatus, page?: string, limit?: string, sort?: string };
 
+  // Validate the agent name and user ID
   if (!name || typeof name !== 'string') {
     return res.status(400).json({ error: 'Invalid or missing agent name' });
   }
@@ -15,6 +16,7 @@ const getAgentsByName = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
+    // Fetch agents by name, including related data
     const agents = await prisma.agent.findMany({
       where: {
         name: { contains: name, mode: 'insensitive' },
@@ -45,8 +47,10 @@ const getAgentsByName = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
+    // Respond with the agents data
     return res.status(200).json(agents);
   } catch (error) {
+    // Handle errors and respond with an error message
     console.error(error);
     return res.status(500).json({ error: 'Internal server error' });
   }
