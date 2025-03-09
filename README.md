@@ -26,7 +26,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"
 ```bash
 npx prisma db push  # if experimenting
 npx prisma generate
-npx prisma migrate dev --name init
+npx prisma migrate dev --name init  # for versioning the schema push 
 ```
 
 Create a `.env` file and add the following:
@@ -43,7 +43,10 @@ See Prisma Schema and seed file in the `prisma` folder. The API is in `src/pages
 npm install
 npx prisma validate  # for validating Prisma schema before running
 npx prisma db push  # to push the DB scripts to create DB tables in a schema as mentioned in .env
-npm run dev
+or 
+npx prisma migrate dev --name init  # for versioning the schema push 
+npm run seed  # to seed the database
+npm run dev # to run dev 
 ```
 
 ### Initial Check
@@ -96,7 +99,11 @@ Run the development server:
 ```bash
     npm install
     npx prisma validate  #for validating prisma schema before running 
+    
+    run this 
     npx prisma db push  #to push the db scripts to create Db tables in a schema as mentioned in .env
+    npx prisma migrate dev --name init
+    npm run seed
     npm run dev
 
 ```
