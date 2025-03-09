@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return deleteAgent(req, res);
     default:
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
-      return res.status(405).end(`Method ${req.method} Not Allowed`);
+      return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 }
 
@@ -63,7 +63,7 @@ async function getAgents(req: NextApiRequest, res: NextApiResponse) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error(`Error fetching agents: ${errorMessage}`);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
 }
 
@@ -112,7 +112,7 @@ async function createAgent(req: NextApiRequest, res: NextApiResponse) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error(`Error creating agent: ${errorMessage}`);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
 }
 
@@ -162,7 +162,7 @@ async function updateAgent(req: NextApiRequest, res: NextApiResponse) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error(`Error updating agent: ${errorMessage}`);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
 }
 
@@ -195,6 +195,6 @@ async function deleteAgent(req: NextApiRequest, res: NextApiResponse) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error(`Error deleting agent: ${errorMessage}`);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
 }
