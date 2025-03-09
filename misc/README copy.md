@@ -6,17 +6,11 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ### Getting Started
 
-#### Step 1: Clone the Repository
+#### Step 1: Set Up the Next.js Project
 
 ```bash
-git clone https://github.com/your-username/my-agent-management-system.git
+npx create-next-app@latest my-agent-management-system
 cd my-agent-management-system
-```
-
-#### Step 2: Set Up the Next.js Project
-
-```bash
-npm install
 npm install prisma @prisma/client
 npx prisma init
 ```
@@ -27,11 +21,11 @@ Update the `DATABASE_URL` in `.env`:
 DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"
 ```
 
-#### Step 3: Define the Prisma Schema
+#### Step 2: Define the Prisma Schema
 
 ```bash
-npx prisma db push  # if experimenting 
-npx prisma generate # generate client 
+npx prisma db push  # if experimenting
+npx prisma generate
 npx prisma migrate dev --name init  # for versioning the schema push 
 ```
 
@@ -43,7 +37,7 @@ DATABASE_URL="postgresql://<user>:<password>@<localhost>:<5432>/<database>?schem
 
 See Prisma Schema and seed file in the `prisma` folder. The API is in `src/pages/api/agent/index.ts`.
 
-#### Step 4: Run the Development Server
+#### Run the Development Server
 
 ```bash
 npm install
@@ -59,42 +53,81 @@ npm run dev # to run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the home page.
 
-### API Call Samples
+### API Call to See All Agents
+
+Use Postman or a browser to access:
+
+[http://localhost:3000/api/agent?page=1&limit=10&sort=name](http://localhost:3000/api/agent?page=1&limit=10&sort=name)
 
 
-#### Get all agents (GET)
+## My sample test app with nextjs and prisma 
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+### Getting Started
+
+
+I created using the following commands
+Step 1: Set Up the Next.js Project
+npx create-next-app@latest my-agent-management-system
+cd my-agent-management-system
+
+npm install prisma @prisma/client
+npx prisma init
+
+update the DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public" in .env 
+
+Step 2: Define the Prisma Schema in  prisma/schema.prisma
+
+npx prisma db push  if experimenting or 
+
+npx prisma generate
+npx prisma migrate dev --name init
+
+
+Create a .env
+
+add the 
+DATABASE_URL="postgresql://<user>:<passwrd>@<localhost>:<5432>/<database>?schema=<schema>"
+
+See Prisma Schema and seed file is in Prisma folder 
+
+API is in  src\pages\api\agent\index.ts
+
+Run the development server:
+
+```bash
+    npm install
+    npx prisma validate  #for validating prisma schema before running 
+    
+    run this 
+    npx prisma db push  #to push the db scripts to create Db tables in a schema as mentioned in .env
+    npx prisma migrate dev --name init
+    npm run seed
+    npm run dev
+
+```
+#### initial check 
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the home page.
+
+#### API call to see all agents In a post man or in browzer 
+http://localhost:3000/api/agent?page=1&limit=10&sort=name 
+ 
+
+
+Get all agents (GET)
 
 ```bash
 curl -X GET "http://localhost:3000/api/agent?page=1&limit=10&sort=name"
-```
-#### Get an agent by ID (GET)
 
-```bash
-curl -X GET "http://localhost:3000/api/agent?id=agent-id"
 ```
-Get agents by name (GET)
 
+Get an agent by ID (GET)
 ```bash
-curl -X GET "http://localhost:3000/api/agent?name=agent-name&page=1&limit=10&sort=name"
+ curl -X GET "http://localhost:3000/api/agent?id=agent-id"
+ 
 ```
-Get agents by domain (GET)
-```bash
-curl -X GET "http://localhost:3000/api/agent?domain=domain-name&page=1&limit=10&sort=name"
-```
-Get agents by provider (GET)
-```bash
-curl -X GET "http://localhost:3000/api/agent?provider=provider-name&page=1&limit=10&sort=name"
-```
-Get agents by status (GET)
-```bash
-curl -X GET "http://localhost:3000/api/agent?status=ACTIVE&page=1&limit=10&sort=name"
-```
-Get agents by provider and domain filtered by status (GET)
-```bash
-curl -X GET "http://localhost:3000/api/agent?provider=provider-name&domain=domain-name&status=ACTIVE&page=1&limit=10&sort=name"
-``` 
-
-#### Create a new agent (POST)
+Create a new agent (POST)
 
 ```bash
 curl -X POST "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
@@ -108,9 +141,9 @@ curl -X POST "http://localhost:3000/api/agent" -H "Content-Type: application/jso
   "persona_id": "persona-id",
   "user_id": "user-id"
 }'
-```
 
-#### Update an existing agent (PUT)
+```
+Update an existing agent (PUT)
 
 ```bash
 curl -X PUT "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
@@ -125,24 +158,26 @@ curl -X PUT "http://localhost:3000/api/agent" -H "Content-Type: application/json
   "persona_id": "new-persona-id",
   "user_id": "new-user-id"
 }'
+
 ```
-
-#### Delete an agent (DELETE)
-
+Delete an agent (DELETE)
 ```bash
 curl -X DELETE "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
   "id": "agent-id"
 }'
+
 ```
+#### to run docker 
 
-### Running with Docker
 
-To build and run the Docker container using Docker Compose:
+To run only  Build and run the Docker container
+we build and run the Docker container using Docker Compose:
+
 
 ```bash
 docker-compose up --build
 docker-compose exec app npm run seed
 ```
+Docker compose copy has its own Postgres db as well 
 
-Docker Compose setup includes its own PostgreSQL database.
-
+ 
