@@ -65,48 +65,58 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 #### Get all agents (GET)
 
 ```bash
-curl -X GET "http://localhost:3000/api/agent?page=1&limit=10&sort=name"
+curl -X GET "http://localhost:3000/api/agent?page=1&limit=10&sort=name&userId=cm805786f0000qyasuvnbqfo9&status=ACTIVE"
 ```
 #### Get an agent by ID (GET)
 
 ```bash
-curl -X GET "http://localhost:3000/api/agent?id=agent-id"
+curl -X GET "http://localhost:3000/api/agent?id=cm805787h000hqyasawcn6v4t&userId=cm805786f0000qyasuvnbqfo9&status=ACTIVE"
 ```
 Get agents by name (GET)
 
 ```bash
-curl -X GET "http://localhost:3000/api/agent?name=agent-name&page=1&limit=10&sort=name"
+curl -X GET "http://localhost:3000/api/agent?name=Agent 1&page=1&limit=10&sort=name&userId=cm805786f0000qyasuvnbqfo9&status=ACTIVE"
 ```
+
+Get agents by User (GET)
+```bash
+http://localhost:3000/api/agent?userId=cm805786f0000qyasuvnbqfo9&page=1&limit=10&sort=name&userId=cm805786f0000qyasuvnbqfo9&status=ACTIVE
+```
+
 Get agents by domain (GET)
 ```bash
-curl -X GET "http://localhost:3000/api/agent?domain=domain-name&page=1&limit=10&sort=name"
+curl -X GET "http://localhost:3000/api/agent?domain=cm805786w0006qyasoxym0rwd&page=1&limit=10&sort=name&userId=cm805786f0000qyasuvnbqfo9&status=ACTIVE"
 ```
 Get agents by provider (GET)
 ```bash
-curl -X GET "http://localhost:3000/api/agent?provider=provider-name&page=1&limit=10&sort=name"
+curl -X GET "http://localhost:3000/api/agent?provider=cm805786n0002qyasdm98tz9w&page=1&limit=10&sort=name&userId=cm805786f0000qyasuvnbqfo9&status=ACTIVE"
 ```
 Get agents by status (GET)
 ```bash
-curl -X GET "http://localhost:3000/api/agent?status=ACTIVE&page=1&limit=10&sort=name"
+curl -X GET "http://localhost:3000/api/agent?status=ACTIVE&page=1&limit=10&sort=name&userId=cm805786f0000qyasuvnbqfo9"
 ```
 Get agents by provider and domain filtered by status (GET)
 ```bash
-curl -X GET "http://localhost:3000/api/agent?provider=provider-name&domain=domain-name&status=ACTIVE&page=1&limit=10&sort=name"
+curl -X GET "http://localhost:3000/api/agent?provider=cm805786n0002qyasdm98tz9w&domain=cm805786w0006qyasoxym0rwd&status=ACTIVE&page=1&limit=10&sort=name&userId=cm805786f0000qyasuvnbqfo9"
 ``` 
+
+
+
 
 #### Create a new agent (POST)
 
 ```bash
 curl -X POST "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
-  "name": "New Agent",
-  "description": "Description of the new agent",
+  "name": "AWS Agent1",
+  "description": "Description of the AWS Agent",
   "status": "ACTIVE",
   "capabilities": ["CAPABILITY_1", "CAPABILITY_2"],
-  "features": ["FEATURE_1", "FEATURE_2"],
-  "config": {"key": "value"},
-  "provider_id": "provider-id",
-  "persona_id": "persona-id",
-  "user_id": "user-id"
+  "features": ["FEATURE_2", "FEATURE_3"],
+  "config": {"aws_api-key": "432543536sssssddd!@33", "key":"AWS value1"},
+  "provider_id": "cm805786n0002qyasdm98tz9w",
+  "persona_id": "cm8057876000bqyaszcrn7yhm",
+  "user_id": "cm805786f0000qyasuvnbqfo9",
+	"domain_id":"cm80578710007qyasoac9ttn3"
 }'
 ```
 
@@ -114,16 +124,17 @@ curl -X POST "http://localhost:3000/api/agent" -H "Content-Type: application/jso
 
 ```bash
 curl -X PUT "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
-  "id": "agent-id",
-  "name": "Updated Agent",
-  "description": "Updated description of the agent",
-  "status": "MAINTENANCE",
-  "capabilities": ["CAPABILITY_3", "CAPABILITY_4"],
-  "features": ["FEATURE_3", "FEATURE_4"],
-  "config": {"key": "new-value"},
-  "provider_id": "new-provider-id",
-  "persona_id": "new-persona-id",
-  "user_id": "new-user-id"
+  "id": "cm81igr0t0001qyz4t7yud4yh",
+	"name": "Insomnia update Agent",
+  "description": "Description of the update Agent",
+  "status": "HELLO",
+  "capabilities": ["CAPABILITY_1", "CAPABILITY_3"],
+  "features": ["FEATURE_2", "FEATURE_4"],
+  "config": {"api-key": "422222ddddddddddd33", "key":"Insomnia value31"},
+  "provider_id": "cm805786n0002qyasdm98tz9w",
+  "persona_id": "cm8057876000bqyaszcrn7yhm",
+  "user_id": "cm805786l0001qyas8fkth595",
+	"domain_id":"cm80578720008qyasxouy3yr4"
 }'
 ```
 
@@ -131,7 +142,8 @@ curl -X PUT "http://localhost:3000/api/agent" -H "Content-Type: application/json
 
 ```bash
 curl -X DELETE "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
-  "id": "agent-id"
+	 "id": "cm81it4oa0000qygsd33fxzd5",
+	  "user_id":"cm805786f0000qyasuvnbqfo9"
 }'
 ```
 
