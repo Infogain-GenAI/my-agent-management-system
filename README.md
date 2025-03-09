@@ -136,13 +136,24 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 #### API call to see all agents In a post man or in browzer 
 http://localhost:3000/api/agent?page=1&limit=10&sort=name 
-
-[ http://localhost:3000/api/agent?page=1&limit=10&sort=name ](http://localhost:3000/api/agent?page=1&limit=10&sort=name )
-
+ 
 
 
+Get all agents (GET)
+
+```bash
 curl -X GET "http://localhost:3000/api/agent?page=1&limit=10&sort=name"
 
+```
+
+Get an agent by ID (GET)
+```bash
+ curl -X GET "http://localhost:3000/api/agent?id=agent-id"
+ 
+```
+Create a new agent (POST)
+
+```bash
 curl -X POST "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
   "name": "New Agent",
   "description": "Description of the new agent",
@@ -155,7 +166,10 @@ curl -X POST "http://localhost:3000/api/agent" -H "Content-Type: application/jso
   "user_id": "user-id"
 }'
 
+```
+Update an existing agent (PUT)
 
+```bash
 curl -X PUT "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
   "id": "agent-id",
   "name": "Updated Agent",
@@ -169,26 +183,28 @@ curl -X PUT "http://localhost:3000/api/agent" -H "Content-Type: application/json
   "user_id": "new-user-id"
 }'
 
-
+```
+Delete an agent (DELETE)
+```bash
 curl -X DELETE "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
   "id": "agent-id"
 }'
 
-
+```
 #### to run docker 
 
 
 
 Docker compose which has its own ppostgre db as well 
-
+```bash
 docker-compose up --build
 docker-compose exec app npm run seed
-
+```
 To run only  Build and run the Docker container
 
 we build and run the Docker container using Docker Compose:
 
-new compse file will have only 
+new compose file will have only 
 version: '3.8'
 
 services:
