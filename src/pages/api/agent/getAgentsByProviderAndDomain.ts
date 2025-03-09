@@ -1,9 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma, logger } from './common';
- 
+import { status as AgentStatus } from '@prisma/client';
+
 // Get agents by provider and domain filtered by status and ordered by name
-const getAgentsByProviderAndDomain = async (req: NextApiRequest, res: NextApiResponse)  => {
-  const { provider, domain, page = 1, limit = 10, sort = 'name' } = req.query;
+const getAgentsByProviderAndDomain = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { provider, domain, userId, status, page = 1, limit = 10, sort = 'name' } = req.query as { provider: string, domain: string, userId: string, status?: AgentStatus, page?: string, limit?: string, sort?: string };
+
+  if (!provider || typeof provider !== 'string') {
+    return res.status(400).json({ error: 'Invalid or missing provider' });
+  }
+
+  if (!domain || typeof domain !== 'string') {
+    return res.status(400).json({ error: 'Invalid or missing domain' });
+  }
+
+  if (!userId || typeof userId !== 'string') {
+    return res.status(400).json({ error: 'Invalid or missing user ID' });
+  }
 
   const pageNumber = parseInt(page as string, 10);
   const pageSize = parseInt(limit as string, 10);
@@ -11,20 +24,22 @@ const getAgentsByProviderAndDomain = async (req: NextApiRequest, res: NextApiRes
   try {
     const agents = await prisma.agent.findMany({
       where: {
-        provider: {
-          id: {
-            equals: provider as string
-          },
-        },
+        provider: { id: { contains: provider } },
         domains: {
           some: {
             domain: {
               id: {
-                equals: domain as string,
+                equals: domain,
               },
             },
           },
-        }
+        },
+        users: {
+          some: {
+            user_id: userId,
+          },
+        },
+        ...(status && { status }),
       },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
@@ -50,20 +65,22 @@ const getAgentsByProviderAndDomain = async (req: NextApiRequest, res: NextApiRes
 
     const totalAgents = await prisma.agent.count({
       where: {
-        provider: {
-          id: {
-            equals: provider as string
-          },
-        },
+        provider: { id: { contains: provider } },
         domains: {
           some: {
             domain: {
-                id: {
-                equals: domain as string
+              id: {
+                equals: domain,
               },
             },
           },
-        }
+        },
+        users: {
+          some: {
+            user_id: userId,
+          },
+        },
+        ...(status && { status }),
       },
     });
 
@@ -81,6 +98,6 @@ const getAgentsByProviderAndDomain = async (req: NextApiRequest, res: NextApiRes
     logger.error(`Error fetching agents by provider and domain: ${errorMessage}`);
     res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
-}
+};
 
 export default getAgentsByProviderAndDomain;

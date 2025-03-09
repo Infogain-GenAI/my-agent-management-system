@@ -14,9 +14,9 @@ import getAgentsByUserId from './getAgentsByUserId';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
-
-  logger.info(`Agents API called method : ${method}`);
-  switch (method) {
+   logger.info(`Agents API called method : ${method}`);
+ 
+   switch (method) {
     case 'GET':
       if (req.query.id) {
         return getAgentById(req, res);
@@ -28,7 +28,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return getAgentsByProvider(req, res);
       } else if (req.query.status) {
         return getAgentsByStatus(req, res);
-      } else if (req.query.provider && req.query.domain && req.query.status) {
+      } else if (req.query.provider && req.query.domain) {
         return getAgentsByProviderAndDomain(req, res);
       } else if (req.query.userId) {
         return getAgentsByUserId(req, res);

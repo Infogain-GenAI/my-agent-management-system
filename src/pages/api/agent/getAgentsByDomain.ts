@@ -3,10 +3,14 @@ import { prisma, logger } from './common';
 
 // Get agents by domain
 const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { domain, page = 1, limit = 10, sort = 'name' } = req.query;
+  const { domain, userId, status, page = 1, limit = 10, sort = 'name' } = req.query;
 
   if (!domain || typeof domain !== 'string') {
     return res.status(400).json({ error: 'Invalid or missing domain' });
+  }
+
+  if (!userId || typeof userId !== 'string') {
+    return res.status(400).json({ error: 'Invalid or missing user ID' });
   }
 
   const pageNumber = parseInt(page as string, 10);
@@ -19,11 +23,17 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
           some: {
             domain: {
               id: {
-                equals: domain 
+                equals: domain,
               },
             },
           },
         },
+        users: {
+          some: {
+            user_id: userId,
+          },
+        },
+        ...(status && { status: status as string }),
       },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
@@ -53,11 +63,17 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
           some: {
             domain: {
               id: {
-                equals: domain
+                equals: domain,
               },
             },
           },
         },
+        users: {
+          some: {
+            user_id: userId,
+          },
+        },
+        ...(status && { status: status as string }),
       },
     });
 
@@ -75,6 +91,6 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
     logger.error(`Error fetching agents by domain: ${errorMessage}`);
     res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
-}
+};
 
 export default getAgentsByDomain;

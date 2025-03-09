@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma, logger } from './common';
 
 const getAgentsByUserId = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { userId, page = 1, limit = 10, sort = 'name' } = req.query;
+  const { userId, status, page = 1, limit = 10, sort = 'name' } = req.query;
 
   if (!userId || typeof userId !== 'string') {
     return res.status(400).json({ error: 'Invalid or missing user ID' });
@@ -18,8 +18,9 @@ const getAgentsByUserId = async (req: NextApiRequest, res: NextApiResponse) => {
           some: {
             user_id: userId,
           },
-        }
-       },
+        },
+        ...(status && { status: status as string }),
+      },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
       orderBy: {
@@ -48,7 +49,8 @@ const getAgentsByUserId = async (req: NextApiRequest, res: NextApiResponse) => {
           some: {
             user_id: userId,
           },
-        }
+        },
+        ...(status && { status: status as string }),
       },
     });
 
