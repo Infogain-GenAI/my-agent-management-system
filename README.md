@@ -194,29 +194,14 @@ curl -X DELETE "http://localhost:3000/api/agent" -H "Content-Type: application/j
 #### to run docker 
 
 
+To run only  Build and run the Docker container
+we build and run the Docker container using Docker Compose:
 
-Docker compose which has its own ppostgre db as well 
+
 ```bash
 docker-compose up --build
 docker-compose exec app npm run seed
 ```
-To run only  Build and run the Docker container
+Docker compose copy has its own Postgres db as well 
 
-we build and run the Docker container using Docker Compose:
-
-new compose file will have only 
-version: '3.8'
-
-services:
-  app:
-    build: .
-    restart: always
-    environment:
-      DATABASE_URL: postgres://<user>:<password>@<host>:<port>/<database>?schema=<schema>
-    ports:
-      - "3000:3000"
-
-
-then save and run  
-docker-compose up --build
-docker-compose exec app npm run seed
+ 
