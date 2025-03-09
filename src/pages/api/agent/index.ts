@@ -71,6 +71,13 @@ async function getAgents(req: NextApiRequest, res: NextApiResponse) {
 async function createAgent(req: NextApiRequest, res: NextApiResponse) {
   const { name, description, status, capabilities, features, config, provider_id, persona_id, user_id, domain_id } = req.body;
 
+  if (!name || !status || !capabilities || !features || !config || !provider_id || !persona_id || !user_id || !domain_id) {
+    return res.status(400).json({
+      error: 'Missing required fields',
+      requiredFields: ['name', 'status', 'capabilities', 'features', 'config', 'provider_id', 'persona_id', 'user_id', 'domain_id'],
+    });
+  }
+
   try {
     const newAgent = await prisma.agent.create({
       data: {
@@ -90,6 +97,13 @@ async function createAgent(req: NextApiRequest, res: NextApiResponse) {
             },
           },
         },
+        users: {
+          create: {
+            user: {
+              connect: { id: user_id },
+            },
+          },
+        },
       },
     });
 
@@ -105,6 +119,13 @@ async function createAgent(req: NextApiRequest, res: NextApiResponse) {
 // Update an existing agent
 async function updateAgent(req: NextApiRequest, res: NextApiResponse) {
   const { id, name, description, status, capabilities, features, config, provider_id, persona_id, user_id, domain_id } = req.body;
+
+  if (!id || !name || !status || !capabilities || !features || !config || !provider_id || !persona_id || !user_id || !domain_id) {
+    return res.status(400).json({
+      error: 'Missing required fields',
+      requiredFields: ['id', 'name', 'status', 'capabilities', 'features', 'config', 'provider_id', 'persona_id', 'user_id', 'domain_id'],
+    });
+  }
 
   try {
     const updatedAgent = await prisma.agent.update({
@@ -126,6 +147,13 @@ async function updateAgent(req: NextApiRequest, res: NextApiResponse) {
             create: { domain: { connect: { id: domain_id } } },
           },
         },
+        users: {
+          upsert: {
+            where: { user_id_agent_id: { user_id, agent_id: id } },
+            update: { user: { connect: { id: user_id } } },
+            create: { user: { connect: { id: user_id } } },
+          },
+        },
       },
     });
 
@@ -141,6 +169,13 @@ async function updateAgent(req: NextApiRequest, res: NextApiResponse) {
 // Delete an agent
 async function deleteAgent(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.body;
+
+  if (!id) {
+    return res.status(400).json({
+      error: 'Missing required field',
+      requiredField: 'id',
+    });
+  }
 
   try {
     await prisma.user_agent.deleteMany({
