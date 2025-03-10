@@ -8,44 +8,67 @@ export default async function handler(
 ) {
   switch (req.method) {
     case 'GET':
-      return getUsers(req, res);
+      return handleGet(req, res);
     case 'POST':
-      return createUser(req, res);
+      return handlePost(req, res);
     case 'PUT':
-      return updateUser(req, res);
+      return handlePut(req, res);
     case 'DELETE':
-      return deleteUser(req, res);
+      return handleDelete(req, res);
     default:
       logger.warn('Invalid method', { method: req.method });
       return res.status(405).json({ message: 'Method not allowed' });
   }
 }
 
-async function getUsers(req: NextApiRequest, res: NextApiResponse) {
-  logger.info('Fetching all users');
+async function handleGet(req: NextApiRequest, res: NextApiResponse) {
+  const { id, email, page = '1', limit = '10', sort = 'email' } = req.query;
+  const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
+
   try {
-    const users = await prisma.user.findMany({
-      orderBy: { first_name: 'asc' },
-      select: {
-        id: true,
-        first_name: true,
-        last_name: true,
-        email: true,
-        role: true,
-        created_at: true,
-        updated_at: true,
-      },
+    if (id) {
+      const user = await prisma.user.findUnique({
+        where: { id: id as string },
+        include: {
+          agents: {
+            include: { agent: true }
+          },
+          projects: true
+        }
+      });
+      return res.status(200).json(user);
+    }
+
+    const where = email ? { email: email as string } : {};
+    
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        skip,
+        take: parseInt(limit as string),
+        orderBy: { [sort as string]: 'asc' },
+        include: {
+          agents: {
+            include: { agent: true }
+          },
+          projects: true
+        }
+      }),
+      prisma.user.count({ where })
+    ]);
+
+    return res.status(200).json({
+      users,
+      total,
+      page: parseInt(page as string),
+      limit: parseInt(limit as string)
     });
-    logger.info('Successfully fetched users', { count: users.length });
-    return res.status(200).json(users);
   } catch (error) {
-    logger.error(error);
-    logger.error('Failed to fetch users', { error });
-    return res.status(500).json({ message: 'Error fetching users' });
+    return res.status(500).json({ error: 'Error fetching users' });
   }
 }
 
-async function createUser(req: NextApiRequest, res: NextApiResponse) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse) {
   const data = req.body;
   logger.info('Creating new user', { data: { ...data, password: '[REDACTED]' } });
 
@@ -57,6 +80,9 @@ async function createUser(req: NextApiRequest, res: NextApiResponse) {
         email: data.email,
         role: data.role,
         password: data.password, // Note: In production, hash password before storing
+        projects: {
+          connect: data.projectIds.map((id: string) => ({ id }))
+        }
       },
       select: {
         id: true,
@@ -66,6 +92,7 @@ async function createUser(req: NextApiRequest, res: NextApiResponse) {
         role: true,
         created_at: true,
         updated_at: true,
+        projects: true
       },
     });
     logger.info('Successfully created user', { id: user.id });
@@ -76,7 +103,7 @@ async function createUser(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function updateUser(req: NextApiRequest, res: NextApiResponse) {
+async function handlePut(req: NextApiRequest, res: NextApiResponse) {
   const data = req.body;
   logger.info('Updating user', { id: data.id });
 
@@ -90,14 +117,19 @@ async function updateUser(req: NextApiRequest, res: NextApiResponse) {
         role: data.role,
         // Only update password if provided
         ...(data.password ? { password: data.password } : {}),
+        projects: {
+          set: data.projectIds.map((id: string) => ({ id }))
+        }
       },
       select: {
         id: true,
-        name: true,
+        first_name: true,
+        last_name: true,
         email: true,
         role: true,
         created_at: true,
         updated_at: true,
+        projects: true
       },
     });
     logger.info('Successfully updated user', { id: user.id });
@@ -108,7 +140,7 @@ async function updateUser(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function deleteUser(req: NextApiRequest, res: NextApiResponse) {
+async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
   logger.info('Deleting user', { id });
 

@@ -10,9 +10,9 @@ const getAgentsByProvider = async (req: NextApiRequest, res: NextApiResponse) =>
     return res.status(400).json({ error: 'Invalid or missing provider' });
   }
 
-  if (!userId || typeof userId !== 'string') {
-    return res.status(400).json({ error: 'Invalid or missing user ID' });
-  }
+  // if (!userId || typeof userId !== 'string') {
+  //   return res.status(400).json({ error: 'Invalid or missing user ID' });
+  // }
 
   const pageNumber = parseInt(page as string, 10);
   const pageSize = parseInt(limit as string, 10);
@@ -22,11 +22,11 @@ const getAgentsByProvider = async (req: NextApiRequest, res: NextApiResponse) =>
     const agents = await prisma.agent.findMany({
       where: {
         provider: { id: { contains: provider } },
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
         ...(status && { status }),
       },
       skip: (Number(page) - 1) * Number(limit),
@@ -38,11 +38,11 @@ const getAgentsByProvider = async (req: NextApiRequest, res: NextApiResponse) =>
     const totalAgents = await prisma.agent.count({
       where: {
         provider: { id: { contains: provider } },
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
         ...(status && { status }),
       },
     });

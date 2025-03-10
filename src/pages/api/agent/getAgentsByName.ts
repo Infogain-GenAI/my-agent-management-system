@@ -11,20 +11,20 @@ const getAgentsByName = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ error: 'Invalid or missing agent name' });
   }
 
-  if (!userId || typeof userId !== 'string') {
-    return res.status(400).json({ error: 'Invalid or missing user ID' });
-  }
+  // if (!userId || typeof userId !== 'string') {
+  //   return res.status(400).json({ error: 'Invalid or missing user ID' });
+  // }
 
   try {
     // Fetch agents by name, including related data
     const agents = await prisma.agent.findMany({
       where: {
         name: { contains: name, mode: 'insensitive' },
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
         ...(status && { status }),
       },
       skip: (Number(page) - 1) * Number(limit),

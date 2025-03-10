@@ -13,41 +13,40 @@ const deleteAgent = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    // Find the agent to ensure the user has permission to delete it
-    const agent = await prisma.agent.findUnique({
-      where: { id },
-      include: {
-        users: true,
-      },
+    // Start a transaction to ensure all related records are deleted
+    await prisma.$transaction(async (prisma) => {
+      // Delete all project associations
+      await prisma.project_agent.deleteMany({
+        where: { agent_id: id }
+      });
+
+      // Delete all user associations
+      await prisma.user_agent.deleteMany({
+        where: { agent_id: id }
+      });
+
+      // Delete all domain associations
+      await prisma.domain_agent.deleteMany({
+        where: { agent_id: id }
+      });
+
+      // Delete all metrics
+      await prisma.metric.deleteMany({
+        where: { agent_id: id }
+      });
+
+      // Finally, delete the agent
+      await prisma.agent.delete({
+        where: { id }
+      });
     });
 
-    // Check if the user has permission to delete the agent
-    if (!agent || !agent.users.some(user => user.user_id === user_id)) {
-      return res.status(403).json({ error: 'Forbidden: User does not have permission to delete this agent' });
-    }
-
-    // Delete the user-agent and domain-agent relationships
-    await prisma.user_agent.deleteMany({
-      where: { agent_id: id, user_id },
-    });
-
-    await prisma.domain_agent.deleteMany({
-      where: { agent_id: id },
-    });
-
-    // Delete the agent
-    await prisma.agent.delete({
-      where: { id },
-    });
-
-    // Respond with success message
-    res.status(200).json({ message: 'Delete success' });
-    logger.info(`Deleted agent with id: ${id}`);
+    logger.info(`Deleted agent with ID: ${id}`);
+    return res.status(200).json({ message: 'Agent deleted successfully' });
   } catch (error) {
-    // Handle errors and respond with an error message
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error(`Error deleting agent: ${errorMessage}`);
-    res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
+    return res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
 };
 

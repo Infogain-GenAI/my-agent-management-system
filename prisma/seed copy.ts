@@ -1,58 +1,19 @@
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 async function main() {
-  // Clear existing data
-  // await prisma.metric.deleteMany({});
-  // await prisma.project_agent.deleteMany({});
-  // await prisma.user_agent.deleteMany({});
-  // await prisma.domain_agent.deleteMany({});
-  // await prisma.agent.deleteMany({});
-  // await prisma.persona.deleteMany({});
-  // await prisma.domain.deleteMany({});
-  // await prisma.provider.deleteMany({});
-  // await prisma.Project.deleteMany({});
-  // await prisma.user.deleteMany({});
 
-  // Create projects first
-  const projects = await Promise.all([
-    prisma.Project.create({
-      data: {
-        name: "Cloud Migration Project",
-        description: "Enterprise cloud migration initiative",
-        user_id: '' // Will be updated later
-      }
-    }),
-    prisma.Project.create({
-      data: {
-        name: "AI Development Pipeline",
-        description: "Automated AI model development workflow",
-        user_id: '' // Will be updated later
-      }
-    }),
-    prisma.Project.create({
-      data: {
-        name: "Security Monitoring System",
-        description: "Enterprise security monitoring platform",
-        user_id: '' // Will be updated later
-      }
-    }),
-    prisma.Project.create({
-      data: {
-        name: "DevOps Automation",
-        description: "CI/CD pipeline automation project",
-        user_id: '' // Will be updated later
-      }
-    }),
-    prisma.Project.create({
-      data: {
-        name: "Data Analytics Platform",
-        description: "Big data analytics and visualization",
-        user_id: '' // Will be updated later
-      }
-    })
-  ]);
-
+    await prisma.metric.deleteMany({});
+    await prisma.user_agent.deleteMany({});
+    await prisma.domain_agent.deleteMany({});
+    await prisma.agent.deleteMany({});
+    await prisma.persona.deleteMany({});
+    await prisma.domain.deleteMany({});
+    await prisma.provider.deleteMany({});
+    await prisma.user.deleteMany({});
+    await prisma.project.deleteMany({});
+    
   // Create sample users with project data
   const user1 = await prisma.user.create({
     data: {
@@ -246,38 +207,103 @@ async function main() {
     ],
   });
 
-  // Create relationships at the end
-  await Promise.all([
-    // Update project user_id fields
-    prisma.Project.update({
-      where: { id: projects[0].id },
-      data: { 
+  // Create 5 sample projects
+  const projects = await Promise.all([
+    prisma.project.create({
+      data: {
+        name: "Cloud Migration Project",
+        description: "Enterprise cloud migration initiative",
         user_id: user1.id,
-        users: { connect: [{ id: user1.id }, { id: user2.id }] }
+        users: {
+          connect: [{ id: user1.id }, { id: user2.id }]
+        },
+        agents: {
+          create: [
+            { agent: { connect: { id: agent1.id } } },
+            { agent: { connect: { id: agent2.id } } }
+          ]
+        }
       }
     }),
-    // ...similar updates for other projects...
-  ]);
-
-  // Create project-agent relationships
-  await Promise.all([
-    prisma.project_agent.createMany({
-      data: [
-        { project_id: projects[0].id, agent_id: agent1.id },
-        { project_id: projects[0].id, agent_id: agent2.id },
-        { project_id: projects[1].id, agent_id: agent3.id },
-        { project_id: projects[1].id, agent_id: agent4.id },
-        { project_id: projects[2].id, agent_id: agent5.id },
-        { project_id: projects[2].id, agent_id: agent1.id },
-        { project_id: projects[3].id, agent_id: agent2.id },
-        { project_id: projects[3].id, agent_id: agent4.id },
-        { project_id: projects[4].id, agent_id: agent3.id },
-        { project_id: projects[4].id, agent_id: agent5.id }
-      ]
+    prisma.project.create({
+      data: {
+        name: "AI Development Pipeline",
+        description: "Automated AI model development workflow",
+        user_id: user2.id,
+        users: {
+          connect: [{ id: user2.id }, { id: user1.id }]
+        },
+        agents: {
+          create: [
+            { agent: { connect: { id: agent3.id } } },
+            { agent: { connect: { id: agent4.id } } }
+          ]
+        }
+      }
+    }),
+    prisma.project.create({
+      data: {
+        name: "Security Monitoring System",
+        description: "Enterprise security monitoring platform",
+        user_id: user1.id,
+        users: {
+          connect: [{ id: user1.id }, { id: user2.id }]
+        },
+        agents: {
+          create: [
+            { agent: { connect: { id: agent5.id } } },
+            { agent: { connect: { id: agent1.id } } }
+          ]
+        }
+      }
+    }),
+    prisma.project.create({
+      data: {
+        name: "DevOps Automation",
+        description: "CI/CD pipeline automation project",
+        user_id: user2.id,
+        users: {
+          connect: [{ id: user2.id }, { id: user1.id }]
+        },
+        agents: {
+          create: [
+            { agent: { connect: { id: agent2.id } } },
+            { agent: { connect: { id: agent4.id } } }
+          ]
+        }
+      }
+    }),
+    prisma.project.create({
+      data: {
+        name: "Data Analytics Platform",
+        description: "Big data analytics and visualization",
+        user_id: user1.id,
+        users: {
+          connect: [{ id: user1.id }, { id: user2.id }]
+        },
+        agents: {
+          create: [
+            { agent: { connect: { id: agent3.id } } },
+            { agent: { connect: { id: agent5.id } } }
+          ]
+        }
+      }
     })
   ]);
 
-  console.log('Created sample projects with relationships:', projects);
+  // Update project user_id fields
+  await Promise.all([
+    prisma.project.updateMany({
+      where: { user_id: '' },
+      data: { user_id: user1.id }
+    }),
+    prisma.project.updateMany({
+      where: { user_id: '' },
+      data: { user_id: user2.id }
+    })
+  ]);
+
+  console.log('Created sample projects:', projects);
 }
 
 main()

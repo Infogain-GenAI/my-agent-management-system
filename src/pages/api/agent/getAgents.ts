@@ -6,9 +6,9 @@ import { status as AgentStatus } from '@prisma/client';
 const getAgents = async (req: NextApiRequest, res: NextApiResponse) => {
   const { userId, status, page = 1, limit = 10, sort = 'name' } = req.query as { userId: string, status?: AgentStatus, page?: string, limit?: string, sort?: string };
 
-  if (!userId || typeof userId !== 'string') {
-    return res.status(400).json({ error: 'Invalid or missing user ID' });
-  }
+  // if (!userId || typeof userId !== 'string') {
+  //   return res.status(400).json({ error: 'Invalid or missing user ID' });
+  // }
 
   const pageNumber = parseInt(page as string, 10);
   const pageSize = parseInt(limit as string, 10);
@@ -16,11 +16,11 @@ const getAgents = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const agents = await prisma.agent.findMany({
       where: {
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
         ...(status && { status }),
       },
       skip: (pageNumber - 1) * pageSize,
@@ -42,16 +42,25 @@ const getAgents = async (req: NextApiRequest, res: NextApiResponse) => {
           },
         },
         metrics: true,
+        projects: {
+          include: {
+            project: {
+              include: {
+                users: true
+              }
+            }
+          }
+        }
       },
     });
 
     const totalAgents = await prisma.agent.count({
       where: {
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
         ...(status && { status }),
       },
     });

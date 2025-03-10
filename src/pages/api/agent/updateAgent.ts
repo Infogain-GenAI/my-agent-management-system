@@ -3,7 +3,7 @@ import { prisma, logger } from './common';
 
 // Update an existing agent
 const updateAgent = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id, name, description, status, capabilities, features, config, provider_id, persona_id, user_id, domain_id } = req.body;
+  const { id, name, description, status, capabilities, features, config, provider_id, persona_id, user_id, domain_id, projectIds } = req.body;
 
   // Validate required fields
   if (!id || !name || !status || !capabilities || !features || !config || !provider_id || !persona_id || !user_id || !domain_id) {
@@ -53,7 +53,25 @@ const updateAgent = async (req: NextApiRequest, res: NextApiResponse) => {
             create: { domain: { connect: { id: domain_id } } },
           },
         },
+        projects: {
+          deleteMany: {},
+          create: projectIds?.map((projectId: string) => ({
+            project: { connect: { id: projectId } }
+          })) || []
+        }
       },
+      include: {
+        users: true,
+        projects: {
+          include: {
+            project: {
+              include: {
+                users: true
+              }
+            }
+          }
+        }
+      }
     });
 
     // Respond with the updated agent

@@ -34,11 +34,11 @@ const getAgentsByProviderAndDomain = async (req: NextApiRequest, res: NextApiRes
             },
           },
         },
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
         ...(status && { status }),
       },
       skip: (pageNumber - 1) * pageSize,
@@ -75,11 +75,11 @@ const getAgentsByProviderAndDomain = async (req: NextApiRequest, res: NextApiRes
             },
           },
         },
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
         ...(status && { status }),
       },
     });

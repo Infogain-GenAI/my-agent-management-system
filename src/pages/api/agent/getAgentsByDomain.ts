@@ -11,9 +11,9 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ error: 'Invalid or missing domain' });
   }
 
-  if (!userId || typeof userId !== 'string') {
-    return res.status(400).json({ error: 'Invalid or missing user ID' });
-  }
+  // if (!userId || typeof userId !== 'string') {
+  //   return res.status(400).json({ error: 'Invalid or missing user ID' });
+  // }
 
   const pageNumber = parseInt(page as string, 10);
   const pageSize = parseInt(limit as string, 10);
@@ -31,11 +31,11 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
             },
           },
         },
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
         ...(status && { status }),
       },
       skip: (pageNumber - 1) * pageSize,
@@ -72,11 +72,11 @@ const getAgentsByDomain = async (req: NextApiRequest, res: NextApiResponse) => {
             },
           },
         },
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
         ...(status && { status }),
       },
     });

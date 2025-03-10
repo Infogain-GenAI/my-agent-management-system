@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma, logger } from './common';
 
 const getAgentById = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { id } = req.query;
+  const { id, userId, includeProjects = 'true' } = req.query;
 
   // Validate the agent ID
   if (!id || typeof id !== 'string') {
@@ -10,9 +10,15 @@ const getAgentById = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    // Fetch the agent by ID, including related data
     const agent = await prisma.agent.findUnique({
-      where: { id },
+      where: { 
+        id,
+        users: userId ? {
+          some: {
+            user_id: userId as string
+          }
+        } : undefined
+      },
       include: {
         provider: true,
         persona: true,
@@ -27,22 +33,39 @@ const getAgentById = async (req: NextApiRequest, res: NextApiResponse) => {
           },
         },
         metrics: true,
-      },
+        projects: includeProjects === 'true' ? {
+          include: {
+            project: {
+              include: {
+                users: true,
+                agents: {
+                  include: {
+                    agent: {
+                      select: {
+                        id: true,
+                        name: true,
+                        status: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } : false
+      }
     });
 
-    // Check if the agent exists
     if (!agent) {
       return res.status(404).json({ error: 'Agent not found' });
     }
 
-    // Respond with the agent data
     return res.status(200).json(agent);
   } catch (error) {
-    // Handle errors and respond with an error message
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error(`Error fetching agent by ID: ${errorMessage}`);
     res.status(500).json({ error: 'Internal Server Error', message: errorMessage });
   }
-};
+}
 
 export default getAgentById;

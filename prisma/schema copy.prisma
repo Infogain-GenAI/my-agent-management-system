@@ -99,7 +99,6 @@ model user {
   created_at      DateTime      @default(now())
   updated_at      DateTime      @updatedAt
   metrics         metric[]
-  projects        Project[]
 
   @@index([email])
 }
@@ -170,7 +169,6 @@ model agent {
   user_id       String
   users         user_agent[]
   metrics       metric[]
-  projects      project_agent[]
   
   @@index([name])
   @@index([provider_id])
@@ -221,28 +219,4 @@ model metric {
   @@index([domain_id])
   @@index([persona_id])
   @@index([user_id])
-}
-
-model Project {
-  id              String   @id @default(cuid())
-  name            String
-  description     String?
-  created_at      DateTime     @default(now())
-  updated_at      DateTime     @updatedAt
-  user_id         String
-  users           user[]
-  agents          project_agent[]
-}
-
-// Add new junction model for Project-Agent relationship
-model project_agent {
-  project_id   String
-  agent_id     String
-  project      Project   @relation(fields: [project_id], references: [id])
-  agent        agent     @relation(fields: [agent_id], references: [id])
-  created_at   DateTime  @default(now())
-
-  @@id([project_id, agent_id])
-  @@index([project_id])
-  @@index([agent_id])
 }

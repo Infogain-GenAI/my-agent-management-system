@@ -6,9 +6,9 @@ import { status as AgentStatus } from '@prisma/client';
 const getAgentsByStatus = async (req: NextApiRequest, res: NextApiResponse) => {
   const { status, userId, page = 1, limit = 10, sort = 'name' } = req.query as { status: AgentStatus, userId: string, page?: string, limit?: string, sort?: string };
 
-  if (!userId || typeof userId !== 'string') {
-    return res.status(400).json({ error: 'Invalid or missing user ID' });
-  }
+  // if (!userId || typeof userId !== 'string') {
+  //   return res.status(400).json({ error: 'Invalid or missing user ID' });
+  // }
 
   const pageNumber = parseInt(page as string, 10);
   const pageSize = parseInt(limit as string, 10);
@@ -17,11 +17,11 @@ const getAgentsByStatus = async (req: NextApiRequest, res: NextApiResponse) => {
     const agents = await prisma.agent.findMany({
       where: {
         status,
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
       },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
@@ -48,11 +48,11 @@ const getAgentsByStatus = async (req: NextApiRequest, res: NextApiResponse) => {
     const totalAgents = await prisma.agent.count({
       where: {
         status,
-        users: {
-          some: {
-            user_id: userId,
-          },
-        },
+        // users: {
+        //   some: {
+        //     user_id: userId,
+        //   },
+        // },
       },
     });
 

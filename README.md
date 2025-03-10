@@ -100,9 +100,12 @@ curl -X GET "http://localhost:3000/api/agent?status=ACTIVE&page=1&limit=10&sort=
 Get agents by provider and domain filtered by status (GET)
 ```bash
 curl -X GET "http://localhost:3000/api/agent?provider=cm805786n0002qyasdm98tz9w&domain=cm805786w0006qyasoxym0rwd&status=ACTIVE&page=1&limit=10&sort=name&userId=cm805786f0000qyasuvnbqfo9"
-``` 
+```
 
-
+Get agents by project (GET)
+```bash
+curl -X GET "http://localhost:3000/api/agent?project=project-id&page=1&limit=10&sort=name&userId=user-id&status=ACTIVE"
+```
 
 
 #### Create a new agent (POST)
@@ -119,6 +122,14 @@ curl -X POST "http://localhost:3000/api/agent" -H "Content-Type: application/jso
   "persona_id": "cm8057876000bqyaszcrn7yhm",
   "user_id": "cm805786f0000qyasuvnbqfo9",
 	"domain_id":"cm80578710007qyasoac9ttn3"
+}'
+```
+
+#### Create a new agent with projects (POST)
+```bash
+curl -X POST "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
+  // ...existing fields...
+  "projectIds": ["project1-id", "project2-id"]
 }'
 ```
 
@@ -140,6 +151,15 @@ curl -X PUT "http://localhost:3000/api/agent" -H "Content-Type: application/json
 }'
 ```
 
+#### Update agent projects (PUT)
+```bash
+curl -X PUT "http://localhost:3000/api/agent" -H "Content-Type: application/json" -d '{
+  "id": "agent-id",
+  // ...existing fields...
+  "projectIds": ["project3-id", "project4-id"]
+}'
+```
+
 #### Delete an agent (DELETE)
 
 ```bash
@@ -147,6 +167,69 @@ curl -X DELETE "http://localhost:3000/api/agent" -H "Content-Type: application/j
 	 "id": "cm81it4oa0000qygsd33fxzd5",
 	  "user_id":"cm805786f0000qyasuvnbqfo9"
 }'
+```
+
+### Project API Examples
+
+#### Get all projects (GET)
+```bash
+curl -X GET "http://localhost:3000/api/project?page=1&limit=10&sort=name"
+```
+
+#### Get project by ID (GET)
+```bash
+curl -X GET "http://localhost:3000/api/project?id=project-id"
+```
+
+#### Create a new project (POST)
+```bash
+curl -X POST "http://localhost:3000/api/project" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Project",
+    "description": "Project description",
+    "userIds": ["user1-id", "user2-id"]
+  }'
+```
+
+#### Update a project (PUT)
+```bash
+curl -X PUT "http://localhost:3000/api/project" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "project-id",
+    "name": "Updated Project",
+    "description": "Updated description",
+    "userIds": ["user1-id", "user3-id"]
+  }'
+```
+
+#### Delete a project (DELETE)
+```bash
+curl -X DELETE "http://localhost:3000/api/project" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "project-id"
+  }'
+```
+
+### Project API Examples with Agents
+
+#### Create a project with agents (POST)
+```bash
+curl -X POST "http://localhost:3000/api/project" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Project with Agents",
+    "description": "Project description",
+    "userIds": ["user1-id", "user2-id"],
+    "agentIds": ["agent1-id", "agent2-id"]
+  }'
+```
+
+#### Get project with agents (GET)
+```bash
+curl -X GET "http://localhost:3000/api/project?id=project-id&includeAgents=true"
 ```
 
 ### Running with Docker
