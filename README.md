@@ -53,7 +53,7 @@ npx prisma validate  # for validating Prisma schema before running
 npx prisma db push  # to push the DB scripts to create DB tables in a schema as mentioned in .env
 or 
 npx prisma migrate dev --name init  # for versioning the schema push 
-npm run seed  # to seed the database
+npx prisma db seed  # to seed the database
 npm run dev # to run dev 
 ```
 
