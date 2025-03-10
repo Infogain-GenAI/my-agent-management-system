@@ -1,0 +1,811 @@
+openapi: 3.0.0
+info:
+  title: Agent API
+  version: 1.0.0
+  description: API for managing agents (AI Agent Store)
+servers:
+  - url: https://api.example.com/v1
+tags:
+  - name: Agent
+    description: Everything about AI Agents
+  - name: Domain
+    description:  Everything about AI Agent Domain
+  - name: Provider
+    description: Operations about AI Agent Provider
+  - name: Persona
+    description: Operations about AI Agent  Perosna
+  - name: User
+    description: Operations about AI Agent  User
+  - name: Project
+    description: Operations about AI Agent  Project
+  - name: Metric
+    description: Operations about AI Agent  Metric
+paths:
+  /agents:
+    get:
+      tags:
+        - Agent
+      summary: List all agents
+      responses:
+        '200':
+          description: A list of agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Agent'
+    post:
+      tags:
+        - Agent
+      summary: Create a new agent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Agent'
+      responses:
+        '201':
+          description: Agent created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+  /agents/{agentId}:
+    get:
+      tags:
+        - Agent
+      summary: Get an agent by ID
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An agent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+    put:
+      tags:
+        - Agent
+      summary: Update an agent by ID
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Agent'
+      responses:
+        '200':
+          description: Agent updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+    delete:
+      tags:
+        - Agent
+      summary: Delete an agent by ID
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+         description: Agent deleted
+  /domains:
+    get:
+      tags:
+        - Domain
+      summary: List all domains
+      responses:
+        '200':
+          description: A list of domains
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Domain'
+    post:
+      tags:
+        - Domain
+      summary: Create a new domain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Domain'
+      responses:
+        '201':
+          description: Domain created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+  /domains/{domainId}:
+    get:
+      tags:
+        - Domain
+      summary: Get a domain by ID
+      parameters:
+        - name: domainId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A domain
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+    put:
+      tags:
+        - Domain
+      summary: Update a domain by ID
+      parameters:
+        - name: domainId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Domain'
+      responses:
+        '200':
+          description: Domain updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Domain'
+    delete:
+      tags:
+        - Domain
+      summary: Delete a domain by ID
+      parameters:
+        - name: domainId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Domain deleted
+  /users:
+    get:
+      tags:
+        - User
+      summary: List all users
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - User
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/{userId}:
+    get:
+      tags:
+        - User
+      summary: Get a user by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags:
+        - User
+      summary: Update a user by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      tags:
+        - User
+      summary: Delete a user by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted
+  /metrics:
+    get:
+      tags:
+        - Metric
+      summary: List all metrics
+      responses:
+        '200':
+          description: A list of metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Metric'
+    post:
+      tags:
+        - Metric
+      summary: Create a new metric
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Metric'
+      responses:
+        '201':
+          description: Metric created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metric'
+  /metrics/{metricId}:
+    get:
+      tags:
+        - Metric
+      summary: Get a metric by ID
+      parameters:
+        - name: metricId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A metric
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metric'
+    put:
+      tags:
+        - Metric
+      summary: Update a metric by ID
+      parameters:
+        - name: metricId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Metric'
+      responses:
+        '200':
+          description: Metric updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metric'
+    delete:
+      tags:
+        - Metric
+      summary: Delete a metric by ID
+      parameters:
+        - name: metricId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Metric deleted
+  /providers:
+    get:
+      tags:
+        - Provider
+      summary: List all providers
+      responses:
+        '200':
+          description: A list of providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Provider'
+    post:
+      tags:
+        - Provider
+      summary: Create a new provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Provider'
+      responses:
+        '201':
+          description: Provider created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+  /providers/{providerId}:
+    get:
+      tags:
+        - Provider
+      summary: Get a provider by ID
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A provider
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+    put:
+      tags:
+        - Provider
+      summary: Update a provider by ID
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Provider'
+      responses:
+        '200':
+          description: Provider updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+    delete:
+      tags:
+        - Provider
+      summary: Delete a provider by ID
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Provider deleted
+  /personas:
+    get:
+      tags:
+        - Persona
+      summary: List all personas
+      responses:
+        '200':
+          description: A list of personas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Persona'
+    post:
+      tags:
+        - Persona
+      summary: Create a new persona
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Persona'
+      responses:
+        '201':
+          description: Persona created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Persona'
+  /personas/{personaId}:
+    get:
+      tags:
+        - Persona
+      summary: Get a persona by ID
+      parameters:
+        - name: personaId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A persona
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Persona'
+    put:
+      tags:
+        - Persona
+      summary: Update a persona by ID
+      parameters:
+        - name: personaId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Persona'
+      responses:
+        '200':
+          description: Persona updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Persona'
+    delete:
+      tags:
+        - Persona
+      summary: Delete a persona by ID
+      parameters:
+        - name: personaId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Persona deleted
+  /projects:
+    get:
+      tags:
+        - Project
+      summary: List all projects
+      responses:
+        '200':
+          description: A list of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+    post:
+      tags:
+        - Project
+      summary: Create a new project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+  /projects/{projectId}:
+    get:
+      tags:
+        - Project
+      summary: Get a project by ID
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+    put:
+      tags:
+        - Project
+      summary: Update a project by ID
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+    delete:
+      tags:
+        - Project
+      summary: Delete a project by ID
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Project deleted
+components:
+  schemas:
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        capabilities:
+          type: array
+          items:
+            type: string
+        features:
+          type: array
+          items:
+            type: string
+        config:
+          type: object
+          additionalProperties:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        provider_id:
+          type: string
+        persona_id:
+          type: string
+        user_id:
+          type: string
+        provider:
+          $ref: '#/components/schemas/Provider'
+        persona:
+          $ref: '#/components/schemas/Persona'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        domains:
+          type: array
+          items:
+            $ref: '#/components/schemas/Domain'
+        metrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metric'
+    Provider:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [ONLINE, OFFLINE]
+        features:
+          type: array
+          items:
+            type: string
+        agent_types:
+          type: array
+          items:
+            type: string
+        integration:
+          type: array
+          items:
+            type: string
+        config:
+          type: object
+          additionalProperties:
+            type: string
+        logo_link:
+          type: string
+        doc_link:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Persona:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [PLATFORM_ADMIN, USER]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Domain:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Metric:
+      type: object
+      properties:
+        id:
+          type: string
+        agent_id:
+          type: string
+        provider_id:
+          type: string
+          nullable: true
+        domain_id:
+          type: string
+          nullable: true
+        persona_id:
+          type: string
+          nullable: true
+        user_id:
+          type: string
+          nullable: true
+        metric_type:
+          type: string
+        metric_value:
+          type: number
+        unit:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time

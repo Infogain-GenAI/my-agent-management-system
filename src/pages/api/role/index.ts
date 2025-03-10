@@ -25,7 +25,7 @@ async function getRoles(req: NextApiRequest, res: NextApiResponse) {
   logger.info('Fetching all roles');
   try {
     const roles = await prisma.role.findMany({
-      orderBy: { name: 'asc' },
+      orderBy: { role: 'asc' },
     });
     logger.info('Successfully fetched roles', { count: roles.length });
     return res.status(200).json(roles);
